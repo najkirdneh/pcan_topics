@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/dbl-ros-pkg/!svn/ver/2081/trunk/projects/mprl/agent_m/src
+END
+agent.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/dbl-ros-pkg/!svn/ver/2082/trunk/projects/mprl/agent_m/src/agent.cpp
+END
+agent-old.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/dbl-ros-pkg/!svn/ver/1844/trunk/projects/mprl/agent_m/src/agent-old.h
+END
+agent.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/dbl-ros-pkg/!svn/ver/2081/trunk/projects/mprl/agent_m/src/agent.h
+END
+node.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/dbl-ros-pkg/!svn/ver/1890/trunk/projects/mprl/agent_m/src/node.cpp
+END

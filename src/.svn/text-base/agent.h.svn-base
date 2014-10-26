@@ -1,0 +1,77 @@
+/*
+ * agent.h
+ *
+ *  Created on: 31 mei 2013
+ *      Author: H. J. Meijdam
+ */
+
+#ifndef AGENT_H_
+#define AGENT_H_
+
+#include <deque>
+#include <ros/ros.h>
+#include <mprl_msgs/Action.h>
+#include <mprl_msgs/StateReward.h>
+#include <mprl_msgs/EnvDescription.h>
+#include <mprl_common/config.h>
+#include <mprl_common/mprl.h>
+#include <mprl_common/communication.h>
+
+
+
+
+using namespace std;
+using namespace mprl;
+
+class QTable
+{
+	protected:
+	int qvalues_, dims_, action_dims_;
+	//Array to store all Q values
+	std::vector<Observation> check_states_;
+	std::vector<double> numb_states_;
+	std::vector<double> numb_actions_;
+	std::vector<Action> check_actions_;
+	Vector Qtable_, state_max_, state_min_, action_max_, action_min_, state_steps_;
+	public:
+	bool init( const std::vector<double> &numb_state_steps,const std::vector<double> & numb_action_steps, Vector &observation_max, Vector observation_min, Vector &action_max,Vector &action_min, float q_init_min, float q_init_max);
+	float getQValue(const Observation &state,const Action& action);
+	bool setQValue(const Observation &state,const Action& action, float QValue);
+	int getQIndex(const Observation &state,const Action &action);
+};
+class MAgent : public BasicAgent
+{
+  protected:
+	int  trace_size_;
+	std::deque<Action> previous_actions_;
+	std::vector<double> numb_action_steps;
+	std::deque<Observation> previous_states_;
+	std::deque<float> eligibility_;
+	Vector action_min_,	action_max_, action_steps_;
+	QTable Qtable_;
+	double gamma_, epsilon_, alpha_, lambda_;
+
+  public:
+	MAgent(){};
+    ~MAgent(){};
+    double evaluate(const Observation &obs, ValueUpdaterPtr updater);
+    void set(const Observation &obs, const Action &action, double value);
+    void experience(const std::vector<mprl::Transition> &transitions);
+    void init(const Configuration &config);
+    bool start(const Observation &obs, Action &action);
+    bool step(double reward, const Observation &observation, Action &action);
+    void end(double reward);
+    Action getAction(const Observation &state);
+    Action randomAction();
+    Action incrementAction(const Action &action);
+    void cleanup()
+    {
+    	BasicAgent::cleanup();
+    }
+    void checkTrace();
+    void message(const Configuration &message, Configuration &result);
+    bool updateTrace(const float delta, float reward, bool absorbing);
+};
+
+
+#endif /* AGENT_H_ */

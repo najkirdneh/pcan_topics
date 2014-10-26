@@ -1,0 +1,322 @@
+#include "agent.h"
+#include <iostream>
+#include <cmath>
+#include <stdlib.h>
+#include <time.h>
+
+
+using namespace std;
+
+
+bool QTable::init(const std::vector<double> &numb_state_steps, const std::vector<double> & numb_action_steps, Vector &observation_max, Vector observation_min, Vector &action_max,Vector &action_min, float q_init_min, float q_init_max)
+{
+	//Build Qtable
+	int Qtable_resize=1;
+	for(int i=0; i<numb_state_steps.size();i++)
+	{
+		Qtable_resize=Qtable_resize*numb_state_steps.at(i);
+	}
+	for(int i=0; i<numb_action_steps.size();i++)
+	{
+		Qtable_resize=Qtable_resize*numb_action_steps.at(i);
+	}
+	Qtable_.resize(Qtable_resize);
+	//Set action&state min&max
+	cout<<"Q table initiated!: "<< Qtable_.size()<<endl;
+	action_min_=action_min;
+	state_min_=observation_min;
+	action_max_=action_max;
+	state_max_=observation_max;
+	//Set number of states and actions
+	numb_states_=numb_state_steps;
+	numb_actions_=numb_action_steps;
+	for(int i=0; i<Qtable_.size();i++)
+	{
+		Qtable_.at(i)= q_init_min+(q_init_max-q_init_min)*(float) rand() / (RAND_MAX);
+	}
+	state_steps_.resize(state_max_.size());
+	for(int i=0; i<numb_states_.size();i++)
+	{
+		state_steps_.at(i)=(state_max_.at(i)-state_min_.at(i))/(numb_states_.at(i)-1);
+	}
+	return true;
+}
+float QTable::getQValue(const Observation &state, const Action &action)
+{
+	//std::cout<<"reached getQValue"<<endl;
+	int index=getQIndex(state, action);
+	return Qtable_.at(index);
+}
+
+bool QTable::setQValue(const Observation &state, const Action& action, float QValue)
+{
+	int index=getQIndex(state, action);
+	Qtable_.at(index)=QValue;
+	return true;
+}
+int QTable::getQIndex(const Observation &state,const Action &action)
+{
+	//std::cout<<"reached getQindex"<<endl;
+	//Get the corresponding state and action dimension indexes
+	std::vector<int> value_index;
+	value_index.resize(state.size()+action.size());
+	for(int i=0;i<state.size();i++)
+	{
+		value_index.at(i)=round((state.at(i)-state_min_.at(i))/((state_max_.at(i)-state_min_.at(i))/ (numb_states_.at(i)-1)));
+		if(value_index.at(i)>(numb_states_.at(i)-1))
+		{
+			cout<<"Q_table corrupt"<<endl;
+			cout<<"value_index.at(i): "<<value_index.at(i)<<endl;
+			cout<<"numb_states_.at(i)-1: "<<numb_states_.at(i)-1<<endl;
+			exit(0);
+		}
+	}
+
+	for(int i=0;i<action.size();i++)
+	{
+		value_index.at(i+state.size())=round((action.at(i)-action_min_.at(i))/((action_max_.at(i)-action_min_.at(i))/ (numb_actions_.at(i)-1)));
+		if(value_index.at(i+state.size())>(numb_actions_.at(i)-1))
+		{
+			cout<<"action.at(i): "<<action.at(i)<<endl;
+			cout<<"Q_table corrupt"<<endl;
+			cout<<"i: "<<i<<endl;
+			cout<<"value_index.at(i+state.size()): "<<value_index.at(i+state.size())<<endl;
+			cout<<"numb_actions_.at(i)-1: "<<numb_actions_.at(i)-1<<endl;
+			exit(0);
+		}
+	}
+	int index=0;
+	int factor=1;
+	//Get the corresponding Q vector index
+	for(int i=0; i<state.size();i++)
+	{
+		index=index+factor*value_index.at(i);
+		factor=factor*numb_states_.at(i);
+	}
+
+	for(int i=0; i<numb_actions_.size();i++)
+	{
+		index=index+factor*value_index.at(i+state.size());
+		factor=factor*numb_actions_.at(i);
+	}
+	return index;
+	//cout<<"index: "<<index<<endl;
+}
+Action MAgent::incrementAction(const Action &action)
+{
+	Action returnAction;
+	returnAction=action;
+	returnAction.at(0)=returnAction.at(0)+action_steps_.at(0);
+	if(returnAction>action_max_)
+	{
+		returnAction=action_max_;
+		return returnAction;
+	}
+	else
+	{
+		for(int i=0;i<action_min_.size()-1;i++)
+		{
+			if(returnAction.at(i)>action_max_.at(i))
+			{
+				returnAction.at(i)=action_min_.at(i);
+				returnAction.at(i+1)=returnAction.at(i+1)+action_steps_.at(i+1);
+			}
+		}
+		//Check increment
+		for(int i=0;i<action_min_.size();i++)
+		{
+			if(returnAction.at(i)>action_max_.at(i)||returnAction.at(i)<action_min_.at(i))
+			{
+				std::cout<<"Action increment failed"<<endl;
+				cout<<"i: "<<i<<endl;
+				cout<<"returnAction.at(i): "<<returnAction.at(i)<<endl;
+				exit(0);
+			}
+		}
+		return returnAction;
+	}
+}
+
+double MAgent::evaluate(const Observation &obs, ValueUpdaterPtr updater)
+    {
+    	cout<<"evaluate() has been called"<<endl;
+    	return 0;
+    }
+void MAgent::set(const Observation &obs, const Action &action, double value)
+    {
+    	cout<<"set() has been called"<<endl;
+    }
+void MAgent::experience(const std::vector<mprl::Transition> &transitions)
+    {
+      cout<<"experience() has been called"<<endl;
+    }
+void MAgent::message(const Configuration &message, Configuration &result)
+    {
+	cout<<"message() has been called"<<endl;
+    }
+void MAgent::init(const Configuration &config)
+    {
+    	BasicAgent::init(config);
+    	double q_init_min, q_init_max;
+    	numb_action_steps =config["action_steps"];
+    	std::vector<double> numb_state_steps =config["state_steps"];
+    	Vector obs_min_=config["observation_min"];
+    	Vector obs_max_=config["observation_max"];
+    	config.get("q_init_min", q_init_min, 0.0);
+    	config.get("q_init_max", q_init_max, 0.1);
+    	config.get("gamma", gamma_, 0.99);
+    	config.get("alpha", alpha_, 0.2);
+    	config.get("epsilon", epsilon_, 0.05);
+    	config.get("lambda", lambda_, 0.9);
+    	config.get("trace_size", trace_size_, 20);
+    	action_min_=config["action_min"];
+    	action_max_=config["action_max"];
+
+    	//Initiate Q table
+    	Qtable_.init(numb_state_steps, numb_action_steps,obs_max_,obs_min_,action_max_, action_min_,q_init_min, q_init_max);
+
+   		//Display some learning parameters
+   		cout<<"gamma: "<<gamma_<<endl;
+   		cout<<"alpha: "<<alpha_<<endl;
+   		cout<<"epsilon: "<<epsilon_<<endl;
+   		cout<<"lambda_: "<<lambda_<<endl;
+
+   		//Set for each action dimension the action step size
+   		action_steps_.resize(action_max_.size());
+   		for(int i=0; i<action_max_.size();i++)
+   		{
+   			action_steps_.at(i)=(action_max_.at(i)-action_min_.at(i))/(numb_action_steps.at(i)-1);
+   		}
+
+    }
+bool MAgent::start(const Observation &obs, Action &action)
+   {
+        BasicAgent::start(obs, action);
+        //std::cout<<"reached start"<<endl;
+        action=getAction(obs);
+        previous_states_.clear();
+        previous_actions_.clear();
+        eligibility_.clear();
+        previous_actions_.push_front(action);
+        previous_states_.push_front(obs);
+        eligibility_.push_front(1);
+        return true;
+   }
+bool MAgent::step(double reward, const Observation &observation, Action &action)
+    {
+      	BasicAgent::step(reward, observation, action);
+      	if((float) rand() / (RAND_MAX)>epsilon_|| isTestRun())
+      	{
+      		action=getAction(observation);
+      	}
+      	else
+      	{
+      		action=randomAction();
+      		//Reset trace, keep last state
+      		previous_states_.resize(1);
+      		previous_actions_.resize(1);
+      		eligibility_.resize(1);
+      	}
+      	//Temporal Difference
+      	float delta=reward+gamma_*Qtable_.getQValue(observation, action)-Qtable_.getQValue(previous_states_.at(0), previous_actions_.at(0));
+    	updateTrace(delta, reward,false);
+    	checkTrace();
+    	//Add new states to the list
+        previous_states_.push_front(observation);
+       	previous_actions_.push_front(action);
+        eligibility_.push_front(1);
+
+      	return true;
+    }
+void MAgent::end(double reward)
+    {
+    	Observation dummy_obs;
+    	Action dummy_action;
+      	BasicAgent::end(reward);
+      	//Temporal difference at absorbing state has a future state-action value of zero
+      	float delta=reward-Qtable_.getQValue(previous_states_.at(0), previous_actions_.at(0));
+      	updateTrace(delta, reward,true);
+    }
+Action MAgent::getAction(const Observation &state)
+    {
+		//std::cout<<"reached getAction"<<endl;
+    	//Action to return
+    	Action action=action_min_;
+    	//temporal action, start at action minimum
+    	Action temp_action=action_min_;
+    	//Value of action minimum
+    	float high=Qtable_.getQValue(state, temp_action);
+    	//Search for action which has the highest value
+    	while(temp_action<action_max_)
+       	{
+       		temp_action=incrementAction(temp_action);
+       		float temp_val=Qtable_.getQValue(state, temp_action);
+       		if(temp_val>high)
+       		{
+       			high=temp_val;
+       			action=temp_action;
+       		}
+       	}
+    	//return it
+    	return action;
+    }
+Action MAgent::randomAction()
+   {
+   	Action action;
+   	action.resize(action_min_.size());
+   	for(int i=0; i<action_min_.size(); i++)
+   	{
+   		//For each action dimension add random number of action steps
+   		action.at(i)=action_min_.at(i)+round( ((float)rand() / (RAND_MAX))*(numb_action_steps.at(i)-1))*action_steps_.at(i);
+   		//cout<<"action.at(i): "<<action.at(i)<<endl;
+   	}
+   	if(action>action_max_||action<action_min_)
+   	{
+   		std::cout<<"Random Action failed"<<endl;
+   		exit(0);
+   	}
+   	return action;
+   }
+void MAgent::checkTrace()
+    {
+    	if(previous_states_.size()!=previous_actions_.size())
+    	{
+    		cout<<"Trace corrupted, previous states and actions do not match"<<endl;
+    		exit(0);
+    	}
+    	if(previous_states_.size()!=eligibility_.size())
+    	{
+    		cout<<"Trace corrupted, previous states and eligibility do not match"<<endl;
+    		exit(0);
+    	}
+    }
+bool MAgent::updateTrace(const float delta, float reward, bool absorbing)
+    {
+    	//Remove state-actions which have the same Q element linked to it as the newest state-action in the list
+    	for(int i=1; i<previous_states_.size(); i++)
+        {
+    		if(Qtable_.getQIndex(previous_states_.at(i),previous_actions_.at(i))==Qtable_.getQIndex(previous_states_.at(0),previous_actions_.at(0)))
+    		{
+    			previous_states_.erase(previous_states_.begin()+i);
+				previous_actions_.erase(previous_actions_.begin()+i);
+				eligibility_.erase(eligibility_.begin()+i);
+    		}
+        }
+    	//If state-action list becomes to large, remove the elements which were first added
+    	if(previous_states_.size()>trace_size_)
+    	{
+    	   	previous_states_.resize(trace_size_);
+    		previous_actions_.resize(trace_size_);
+    		eligibility_.resize(trace_size_);
+    	}
+    	//Update state-action values
+    	for(int i=0; i<previous_states_.size(); i++)
+    	{
+    		float previousQValue=Qtable_.getQValue(previous_states_.at(i), previous_actions_.at(i));
+    		Qtable_.setQValue(previous_states_.at(i), previous_actions_.at(i), previousQValue+alpha_*delta*eligibility_.at(i));
+    		//Decay trace
+    		eligibility_.at(i)=eligibility_.at(i)*gamma_*lambda_;
+
+    	}
+    	return true;
+    }

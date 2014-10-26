@@ -1,0 +1,31 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+
+The pcan_topics package is based on the transmi- and receivetest programs. It only supports the PCAN-USB adapter and standard CAN messages. The package contains two nodes. the PCAN_transmit node sends CAN messages based on the strings that are published on the "pcan_transmitted" topic. The PCAN_receive node publishes a string representation of received CAN messages on the "pcan_received" topic. The pcan_topic package depends on the libpcan package. Make sure it is correctly installed. The steps to install the libpcan package can be found here:
+
+http://wiki.ros.org/libpcan
+
+After these steps the nodes can be started. With the -b argument the Baudrate of the adapter can be set. The following values correspond to the following Baudrates:
+
+		0x0014  =   1 MBit/s \n
+		0x001C  = 500 kBit/s \n
+		0x011C  = 250 kBit/s \n
+		0x031C  = 125 kBit/s \n
+		0x432F  = 100 kBit/s \n
+		0x472F  =  50 kBit/s \n
+		0x532F  =  20 kBit/s \n
+		0x672F  =  10 kBit/s \n
+		0x7F7F  =   5 kBit/s \n
+
+The command line can also be used to send CAN messages. An example of such a command:
+
+rostopic pub /pcan_transmitted std_msgs/String "0x00B 0x06 0x00 0x06 0x11 0x00 0x11 0x11" -r 100
+
+An example of a string representation of a received CAN message is:
+
+data: 4960247.288 0x0C 0x06 0x05 0xC7 0xFD 0x98 0xB9 0x18 0x00 0x00
+
+
+*/

@@ -1,0 +1,277 @@
+// INCLUDE
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>   // exit
+#include <signal.h>
+#include <string.h>
+#include <stdlib.h>   // strtoul
+#include <fcntl.h>    // O_RDWR
+#include <libpcan.h>
+#include <common.h>
+#include <ctype.h>
+
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+#include <sstream>
+#include "can_handler.h"
+
+
+void can_handler::do_exit(int error)
+{
+  if (h)
+  {
+    print_diag("can_listener");
+    CAN_Close(h);
+
+  }
+  printf("can_listener (fdsafsdafroscd ): finished (%d).\n\n", error);
+  exit(error);
+}
+
+
+can_handler::can_handler()
+{
+
+  //Initialisation
+  nType = HW_PCI;
+  dwPort = 0;
+  wIrq = 0;
+  wBTR0BTR1 = 0;
+  nExtended = CAN_INIT_TYPE_ST;
+  szDevNode = DEFAULT_NODE;
+  bDevNodeGiven = false;
+  bTypeGiven    = false;
+  bDisplayOn    = true;
+  errno = 0;
+  chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+  ros::Rate loop_rate(1000);
+
+}
+void can_handler::hlpMsg()
+{
+	printf("can_listener - a small node, based on transmi- and receivetest , which receives and prints CAN messages.\n");
+	printf("usage:   can_listener {[-f=devicenode] | [-b=BTR0BTR1]  [-?]\n");
+	printf("options: -f - devicenode - path to devicefile, default=%s\n", DEFAULT_NODE);
+	//printf("         -t - type of interface, e.g. 'pci', 'sp', 'epp', 'isa', 'pccard' or 'usb' (default: pci).\n");
+	//printf("         -p - port in hex notation if applicable, e.g. 0x378 (default: 1st port of type).\n");
+	//printf("         -i - irq in dec notation if applicable, e.g. 7 (default: irq of 1st port).\n");
+	printf("         -b - BTR0BTR1 code in hex, e.g. 0x001C (default: 500 kbit).\n");
+	//printf("         -e - accept extended frames. (default: standard frames)\n");
+	printf("         -? or --help - this help\n");
+	printf("\n");
+}
+
+
+void can_handler::init(int argc, char **argv)
+{
+	//current_release = CURRENT_RELEASE;
+
+	// decode command line arguments
+	for (i = 1; i < argc; i++)
+	{
+	    char c;
+
+	    ptr = argv[i];
+
+	    while (*ptr == '-')
+	      ptr++;
+
+	    c = *ptr;
+	    ptr++;
+
+	    if (*ptr == '=')
+	      ptr++;
+
+	    switch(tolower(c))
+	    {
+	    	case 'f':
+	        szDevNode = ptr;
+	        bDevNodeGiven = true;
+	        break;
+	    	case 'd':
+	        if (strcmp(ptr, "no") == 0)
+	          bDisplayOn = false;
+	        break;
+	      //case 't':
+	        //nType = getTypeOfInterface(ptr);
+	        //if (!nType)
+	        //{
+	         // errno = EINVAL;
+	        //  printf("Can_listener: unknown type of interface!\n");
+        //  goto error;
+	        //}
+	        //bTypeGiven = true;
+	        //break;
+	    //  case 'p':
+	    //    dwPort = strtoul(ptr, NULL, 16);
+	    //    break;
+	     // case 'i':
+	     //   wIrq   = (__u16)strtoul(ptr, NULL, 10);
+	      //  break;
+	   //   case 'e':
+	   //     nExtended = CAN_INIT_TYPE_EX;
+	   //     break;
+	    	case '?':
+	    	case 'h':
+	        hlpMsg();
+	        //goto error;
+	        break;
+	    	case 'b':
+	        wBTR0BTR1 = (__u16)strtoul(ptr, NULL, 16);
+	        break;
+	        default:
+	         errno = EINVAL;
+	        goto error;
+	       	break;
+	    }
+	}
+
+	// tell some information to the user
+	  if (!bTypeGiven)
+	  {
+	    printf("Can_listener: device node=\"%s\"\n", szDevNode);
+	  }
+	  else
+	  {
+	    printf("Can_listener: type=%s", getNameOfInterface(nType));
+	    if (nType == HW_USB)
+	      printf(", Serial Number=default, Device Number=%d\n", dwPort);
+	    else
+	    {
+	          if (dwPort)
+	          {
+	            if (nType == HW_PCI)
+	              printf(", %d. PCI device", dwPort);
+	            else
+	              printf(", port=0x%08x", dwPort);
+	          }
+	          else
+	            printf(", port=default");
+
+	          if ((wIrq) && !(nType == HW_PCI))
+	            printf(" irq=0x%04x\n", wIrq);
+	          else
+	            printf(", irq=default\n");
+	    }
+	  }
+
+	  if (wBTR0BTR1)
+	      printf(", init with BTR0BTR1=0x%04x\n", wBTR0BTR1);
+	    else
+	      printf(", init with 500 kbit/sec.\n");
+
+
+	  // test device node and type
+	  if (bDevNodeGiven && bTypeGiven)
+	  {
+	      errno = EINVAL;
+	      perror("can_listener: device node and type together is useless");
+	      goto error;
+	  }
+
+
+	  /* open CAN port */
+	   if ((bDevNodeGiven) || (!bDevNodeGiven && !bTypeGiven))
+	   {
+	     h = LINUX_CAN_Open(szDevNode, O_RDWR);
+	     if (!h)
+	     {
+	       printf("Can_listener: can't open %s\n", szDevNode);
+	       goto error;
+	     }
+	   }
+	   else {
+	     // please use what is appropriate
+	     // HW_DONGLE_SJA
+	     // HW_DONGLE_SJA_EPP
+	     // HW_ISA_SJA
+	     // HW_PCI
+	     h = CAN_Open(nType, dwPort, wIrq);
+	     if (!h)
+	     {
+	       printf("Can_listener: can't open %s device.\n", getNameOfInterface(nType));
+	       goto error;
+	     }
+	   }
+	   /* clear status */
+	     CAN_Status(h);
+
+	     // get version info
+	     errno = CAN_VersionInfo(h, txt);
+	     if (!errno)
+	       printf("Can_listener: driver version = %s\n", txt);
+	     else {
+	       perror("Can_listener: CAN_VersionInfo()");
+	       goto error;
+	     }
+
+     // init to a user defined bit rate
+	     if (wBTR0BTR1)
+	     {
+	       errno = CAN_Init(h, wBTR0BTR1, nExtended);
+	       if (errno)
+	       {
+	         perror("Can_listener: CAN_Init()");
+	         goto error;
+	       }
+	     }
+
+
+	error:
+	do_exit(errno);
+}
+
+void can_handler::listen()
+{
+	// Enter read loop in which Can data is pushed onto chatter
+	while (ros::ok())
+	{
+		// Real code
+		TPCANRdMsg m;
+		__u32 status;
+		if (LINUX_CAN_Read(h, &m))
+		{
+		    perror("can_listener: LINUX_CAN_Read()");
+
+		}
+		else
+		{
+		   //print_message_ex(&m);
+		   // check if a CAN status is pending
+		   if (m.Msg.MSGTYPE & MSGTYPE_STATUS)
+		   {
+		      status = CAN_Status(h);
+		      if ((int)status < 0)
+		      {
+		          errno = nGetLastError();
+		          perror("Can_listener: CAN_Status()");
+		      }
+		      else
+		          printf("Can_listener: pending CAN status 0x%04x read.\n", (__u16)status);
+		   }
+		 }
+
+
+
+
+		std_msgs::String msg;
+		std::stringstream ss;
+		ss << m.Msg.ID;
+		ss << " ";
+		char LEN[3];
+		sprintf(LEN, "%02X", m.Msg.LEN);
+		ss << LEN;
+		ss << " ";
+		for (int i=0; i<sizeof(m.Msg.DATA); i++)
+		{
+			char DATA[3];
+			sprintf(DATA, "%02X", m.Msg.DATA[i]);
+			ss << DATA;
+			ss << " ";
+		}
+		msg.data = ss.str();
+		chatter_pub.publish(msg);
+	}
+}
