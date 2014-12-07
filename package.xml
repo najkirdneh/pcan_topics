@@ -1,0 +1,26 @@
+<package>
+<name>
+pcan_topics
+</name>
+ <version>1.0.1</version>
+
+  <description>
+
+     pcan topics is based on transmi- and receivetest. It consists of two nodes; pcan_transmit and pcan_receive. The pcan_transmit is subscribed to the pcan_transmit topic and sends a CAN message based on the string published. The pcan_receive publishes incomming CAN messages on the pcan_receive topic in string format.
+
+  </description>
+  <maintainer email="hendrik.meijdam@gmail.com">HJMeijdam</maintainer>
+  <license>GNU</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend> package="libpcan"</build_depend>
+  <build_depend> package="std_msgs"</build_depend>
+  <build_depend> package="roscpp"</build_depend>
+  <run_depend>package="libpcan"</run_depend>
+  <run_depend>package="std_msgs"</run_depend>
+  <run_depend>package="roscpp"</run_depend>
+
+  
+
+</package>
+
+
