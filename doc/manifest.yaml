@@ -1,16 +1,20 @@
-authors: HJMeijdam
-brief: pcan_topics
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
 depends:
-- libpcan
-- std_msgs
-- roscpp
-description: "\n\n     pcan topics is based on transmi- and receivetest. It consists\
-  \ of two nodes; pcan_transmit and pcan_receive. The pcan_transmit is subscribed\
-  \ to the pcan_transmit topic and sends a CAN message based on the string published.\
-  \ The pcan_receive publishes incomming CAN messages on the pcan_receive topic in\
-  \ string format.\n\n  "
+- catkin
+- package="libpcan"
+- package="roscpp"
+- package="std_msgs"
+description: pcan topics is based on transmi- and receivetest. It consists of two
+  nodes; pcan_transmit and pcan_receive. The pcan_transmit is subscribed to the pcan_transmit
+  topic and sends a CAN message based on the string published. The pcan_receive publishes
+  incomming CAN messages on the pcan_receive topic in string format.
 license: GNU
+maintainers: HJMeijdam <hendrik.meijdam@gmail.com>
 msgs: []
 package_type: package
+repo_url: ''
 srvs: []
 url: ''

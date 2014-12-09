@@ -16,8 +16,9 @@
 #include <sstream>
 #include "pcan_receive.h"
 
+// DEFINES
 
-
+#define DEFAULT_NODE "/dev/pcan32"
 
 void pcan_receive::hlpMsg()
 {
@@ -28,7 +29,8 @@ void pcan_receive::hlpMsg()
 	 *
 	 * */
 	printf("pcan_receive - a small node, based on receivetest , which receives CAN messages and publishes them on a topic.\n");
-	printf("usage:   pcan_receive { | [-b=BTR0BTR1]  [-?]\n");
+	printf("usage:   pcan_receive {[-f=devicenode]  | {[-b=BTR0BTR1]  [-?]}}\n");
+	printf("options: -f - devicenode, default=%s\n", DEFAULT_NODE);
 	printf("         -b - BTR0BTR1 code in hex, e.g.\n");
 	printf("		0x0014  =   1 MBit/s\n");
 	printf("		0x001C  = 500 kBit/s\n");
@@ -40,7 +42,7 @@ void pcan_receive::hlpMsg()
 	printf("		0x672F  =  10 kBit/s\n");
 	printf("		0x7F7F  =   5 kBit/s\n");
 	printf("		(default: 1 Mbit).\n");
-	printf("		-? or --help - this help\n");
+	printf("	-? or --help - this help\n");
 	printf("\n");
 
 }
@@ -55,25 +57,7 @@ pcan_receive::pcan_receive()
 		 *
 		 * */
   //Initialisation
-  nType = HW_PCI;
-  dwPort = 0;
-  wIrq = 0;
-  // parameter wBTR0BTR1
-   // bitrate codes of BTR0/BTR1 registers
-   //#define CAN_BAUD_1M     0x0014  //   1 MBit/s
-   //#define CAN_BAUD_500K   0x001C  // 500 kBit/s
-   //#define CAN_BAUD_250K   0x011C  // 250 kBit/s
-   //#define CAN_BAUD_125K   0x031C  // 125 kBit/s
-   //#define CAN_BAUD_100K   0x432F  // 100 kBit/s
-   //#define CAN_BAUD_50K    0x472F  //  50 kBit/s
-   //#define CAN_BAUD_20K    0x532F  //  20 kBit/s
-   //#define CAN_BAUD_10K    0x672F  //  10 kBit/s
-   //#define CAN_BAUD_5K     0x7F7F  //   5 kBit/s
-  wBTR0BTR1 = 0x0014;
-  szDevNode = DEFAULT_NODE;
-  bDevNodeGiven = false;
-  bTypeGiven    = false;
-  errno = 0;
+  h = 0;
   pcan_pub = n.advertise<std_msgs::String>("pcan_received", 1);
 }
 
@@ -87,12 +71,32 @@ void pcan_receive::init(int argc, char **argv)
 			 * Therefore, only the PCAN-USB adapter is, and standard messages are, supported.
 			 *
 			 * */
-
+	int   nExtended = CAN_INIT_TYPE_ST;
+	int nType;
+	__u32 dwPort;
+	__u16 wIrq;
+	char *ptr;
+	__u16 wBTR0BTR1 = 0x0014;
+	// parameter wBTR0BTR1
+	// bitrate codes of BTR0/BTR1 registers
+	//#define CAN_BAUD_1M     0x0014  //   1 MBit/s
+	//#define CAN_BAUD_500K   0x001C  // 500 kBit/s
+	//#define CAN_BAUD_250K   0x011C  // 250 kBit/s
+	//#define CAN_BAUD_125K   0x031C  // 125 kBit/s
+	//#define CAN_BAUD_100K   0x432F  // 100 kBit/s
+	//#define CAN_BAUD_50K    0x472F  //  50 kBit/s
+	//#define CAN_BAUD_20K    0x532F  //  20 kBit/s
+	//#define CAN_BAUD_10K    0x672F  //  10 kBit/s
+	//#define CAN_BAUD_5K     0x7F7F  //   5 kBit/s
+	const char  *szDevNode = DEFAULT_NODE;
+	bool bDevNodeGiven = false;
+	bool bTypeGiven = false;
+	char txt[VERSIONSTRING_LEN];
 	// decode command line arguments
-		for (i = 1; i < argc; i++)
+		for (int i = 1; i < argc; i++)
 		{
 		    char c;
-
+		    char *ptr;
 		    ptr = argv[i];
 
 		    while (*ptr == '-')
@@ -110,6 +114,10 @@ void pcan_receive::init(int argc, char **argv)
 		      case 'h':
 		        hlpMsg();
 		    	do_exit(errno);
+		        break;
+		      case 'f':
+		        szDevNode = ptr;
+		        bDevNodeGiven = true;
 		        break;
 		      case 'b':
 		        wBTR0BTR1 = (__u16)strtoul(ptr, NULL, 16);

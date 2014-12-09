@@ -19,7 +19,9 @@ pcan_topics
   <run_depend>package="std_msgs"</run_depend>
   <run_depend>package="roscpp"</run_depend>
 
-  
+ <export>
+  <rosdoc config="rosdoc.yaml" />
+</export> 
 
 </package>
 

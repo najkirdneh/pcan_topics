@@ -16,16 +16,6 @@
 #include "std_msgs/String.h"
 #include <sstream>
 
-// DEFINES
-
-#define DEFAULT_NODE "/dev/pcan32"
-#define CURRENT_RELEASE "Release_20090203_n"
-
-// GLOBALS
-
-HANDLE h;
-const char *current_release;
-
 int main(int argc, char** argv)
 {
 	/*!
