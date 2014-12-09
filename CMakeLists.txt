@@ -1,32 +1,27 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# Declare the version of the CMake API for forward-compatibility
+cmake_minimum_required(VERSION 2.8.3)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+# Declare the name of the CMake Project
+project(pcan_topics)
 
-rosbuild_init()
+# Find and get all the information about the roscpp package
+find_package( catkin REQUIRED COMPONENTS roscpp  libpcan)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#This function must be called before declaring any targets with add_library() or add_executable(). The function has 5 optional arguments: 
+catkin_package()
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+# Define an execuable target called pcan_receive 
+add_executable(pcan_receive src/pcan_receive_node.cpp src/pcan_receive.cpp src/common.cpp)
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
+# Link the pcan_receive target against the libraries used by roscpp
+target_link_libraries(pcan_receive   ${catkin_LIBRARIES})
+target_link_libraries(pcan_receive   ${roscpp_LIBRARIES})
 
-rosbuild_add_executable(pcan_receive src/pcan_receive_node.cpp src/pcan_receive.cpp src/common.cpp)
-rosbuild_add_executable(pcan_transmit src/pcan_transmit_node.cpp src/pcan_transmit.cpp src/common.cpp)
+# Define an execuable target called pcan_transmit
+add_executable(pcan_transmit src/pcan_transmit_node.cpp src/pcan_transmit.cpp src/common.cpp)
 
+# Link the pcan_transmit target against the libraries used by roscpp
+target_link_libraries(pcan_transmit   ${catkin_LIBRARIES})
+target_link_libraries(pcan_receive   ${roscpp_LIBRARIES})
 
 
