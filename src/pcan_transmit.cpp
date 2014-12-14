@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>   // strtoul
 #include <fcntl.h>    // O_RDWR
-#include <libpcan.h>
 #include "common.h"
 #include <ctype.h>
 #include "ros/ros.h"
@@ -55,9 +54,9 @@ pcan_transmit::pcan_transmit()
 			 * In the contructor the default parameters of the node are defined.
 			 *
 			 * */
-  //Initialisation
-  h = 0 ;
-  pcan_sub = n.subscribe("pcan_transmitted", 1, &pcan_transmit::transmit, this);
+	//Initialisation
+	h = 0 ;
+	pcan_sub = n.subscribe("pcan_transmitted", 1, &pcan_transmit::transmit, this);
 }
 
 void pcan_transmit::init(int argc, char **argv)
@@ -69,6 +68,7 @@ void pcan_transmit::init(int argc, char **argv)
 				 * Therefore, only the PCAN-USB adapter is, and standard messages are, supported.
 				 *
 				 * */
+
 	int   nExtended = CAN_INIT_TYPE_ST;
 	int nType;
 	__u32 dwPort;
@@ -112,7 +112,7 @@ void pcan_transmit::init(int argc, char **argv)
 		      case '?':
 		      case 'h':
 		    	hlpMsg();
-		    	do_exit(errno);
+		    	do_exit(errno, h);
 		        break;
 		      case 'f':
 		        szDevNode = ptr;
@@ -123,7 +123,7 @@ void pcan_transmit::init(int argc, char **argv)
 		        break;
 		      default:
 		         errno = EINVAL;
-		         do_exit(errno);;
+		         do_exit(errno, h);;
 		        break;
 		    }
 		}
@@ -134,7 +134,7 @@ void pcan_transmit::init(int argc, char **argv)
 		     if (!h)
 		     {
 		       printf("pcan_transmit: can't open %s\n", szDevNode);
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		   }
 		   else {
@@ -147,7 +147,7 @@ void pcan_transmit::init(int argc, char **argv)
 		     if (!h)
 		     {
 		       printf("pcan_transmit: can't open %s device.\n", getNameOfInterface(nType));
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		   }
 		   /* clear status */
@@ -158,7 +158,7 @@ void pcan_transmit::init(int argc, char **argv)
 		       printf("pcan_transmit: driver version = %s\n", txt);
 		     else {
 		       perror("pcan_transmit: CAN_VersionInfo()");
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		     // init to a user defined bit rate
 		     if (wBTR0BTR1)
@@ -167,7 +167,7 @@ void pcan_transmit::init(int argc, char **argv)
 		       if (errno)
 		       {
 		         perror("pcan_transmit: CAN_Init()");
-		         do_exit(errno);;
+		         do_exit(errno, h);;
 		       }
 		     }
 

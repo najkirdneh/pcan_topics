@@ -8,13 +8,13 @@
 #include <string.h>
 #include <stdlib.h>   // strtoul
 #include <fcntl.h>    // O_RDWR
-#include <libpcan.h>
 #include <ctype.h>
 #include "common.h"
 #include "pcan_receive.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <sstream>
+
 
 
 
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	pcan_receive_1.init(argc, argv);
 	signal(SIGTERM, signal_handler);
 	signal(SIGINT, signal_handler);
-	// Enter read loop in which Can data is published on /can_in
+	// Enter read loop in which Can data is published on /can_receive
 	while(ros::ok)
 	{
 		pcan_receive_1.receive();

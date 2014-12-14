@@ -10,7 +10,6 @@
 #include <fcntl.h>    // O_RDWR
 #include "common.h"
 #include <ctype.h>
-
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <sstream>

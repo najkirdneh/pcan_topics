@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>   // strtoul
 #include <fcntl.h>    // O_RDWR
-#include <libpcan.h>
 #include "common.h"
 #include <ctype.h>
 #include "ros/ros.h"
@@ -56,9 +55,9 @@ pcan_receive::pcan_receive()
 		 * In the contructor the default parameters of the node are defined.
 		 *
 		 * */
-  //Initialisation
-  h = 0;
-  pcan_pub = n.advertise<std_msgs::String>("pcan_received", 1);
+	//Initialisation
+	h = 0;
+	pcan_pub = n.advertise<std_msgs::String>("pcan_received", 1);
 }
 
 
@@ -113,7 +112,7 @@ void pcan_receive::init(int argc, char **argv)
 		      case '?':
 		      case 'h':
 		        hlpMsg();
-		    	do_exit(errno);
+		    	do_exit(errno, h);
 		        break;
 		      case 'f':
 		        szDevNode = ptr;
@@ -124,7 +123,7 @@ void pcan_receive::init(int argc, char **argv)
 		        break;
 		      default:
 		         errno = EINVAL;
-		         do_exit(errno);;
+		         do_exit(errno, h);;
 		       	break;
 		    }
 		}
@@ -135,7 +134,7 @@ void pcan_receive::init(int argc, char **argv)
 		     if (!h)
 		     {
 		       printf("pcan_receive: can't open %s\n", szDevNode);
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		   }
 		   else {
@@ -148,7 +147,7 @@ void pcan_receive::init(int argc, char **argv)
 		     if (!h)
 		     {
 		       printf("pcan_receive: can't open %s device.\n", getNameOfInterface(nType));
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		   }
 		   /* clear status */
@@ -159,7 +158,7 @@ void pcan_receive::init(int argc, char **argv)
 		       printf("pcan_receive: driver version = %s\n", txt);
 		     else {
 		       perror("pcan_receive: CAN_VersionInfo()");
-		       do_exit(errno);;
+		       do_exit(errno, h);;
 		     }
 		     // init to a user defined bit rate
 		     if (wBTR0BTR1)
@@ -168,7 +167,7 @@ void pcan_receive::init(int argc, char **argv)
 		       if (errno)
 		       {
 		         perror("pcan_receive: CAN_Init()");
-		         do_exit(errno);;
+		         do_exit(errno, h );;
 		       }
 		     }
 

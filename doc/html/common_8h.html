@@ -48,17 +48,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6eae555086e24c8d918131cf9d18d205"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#a6eae555086e24c8d918131cf9d18d205">do_exit</a> (int error)</td></tr>
-<tr class="separator:a6eae555086e24c8d918131cf9d18d205"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84c56e815d950087c848a6044c3602b1"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#a84c56e815d950087c848a6044c3602b1">getNameOfInterface</a> (int nType)</td></tr>
-<tr class="separator:a84c56e815d950087c848a6044c3602b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9ddf38b3664f62c72f786d4af0ed067"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#ad9ddf38b3664f62c72f786d4af0ed067">print_diag</a> (const char *prgName)</td></tr>
-<tr class="separator:ad9ddf38b3664f62c72f786d4af0ed067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affcc03582522b3267e175fada2c8e618"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#affcc03582522b3267e175fada2c8e618">do_exit</a> (int error, HANDLE h)</td></tr>
+<tr class="separator:affcc03582522b3267e175fada2c8e618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad81c4fa96a8dd394717a388e2526cc43"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#ad81c4fa96a8dd394717a388e2526cc43">getNameOfInterface</a> (int nType)</td></tr>
+<tr class="separator:ad81c4fa96a8dd394717a388e2526cc43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ea2a6ef720dda9578310ef2e8dd51b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#a73ea2a6ef720dda9578310ef2e8dd51b">print_diag</a> (const char *prgName, HANDLE h)</td></tr>
+<tr class="separator:a73ea2a6ef720dda9578310ef2e8dd51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b527c56ed133ee6815bfbc625e757af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="common_8h.html#a3b527c56ed133ee6815bfbc625e757af">signal_handler</a> (int signal)</td></tr>
 <tr class="separator:a3b527c56ed133ee6815bfbc625e757af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a6eae555086e24c8d918131cf9d18d205"></a>
+<a class="anchor" id="affcc03582522b3267e175fada2c8e618"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -66,23 +66,33 @@ Functions</h2></td></tr>
           <td class="memname">void do_exit </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>error</em></td><td>)</td>
+          <td class="paramname"><em>error</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">HANDLE&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The function is based on the <a class="el" href="common_8cpp.html#a6eae555086e24c8d918131cf9d18d205">do_exit()</a> function from both the transmi- and receivetest programs.</p>
+<p>The function is based on the <a class="el" href="common_8cpp.html#affcc03582522b3267e175fada2c8e618">do_exit()</a> function from both the transmi- and receivetest programs.</p>
 
-<p>Definition at line <a class="el" href="common_8cpp_source.html#l00039">39</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
+<p>Definition at line <a class="el" href="common_8cpp_source.html#l00029">29</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a84c56e815d950087c848a6044c3602b1"></a>
+<a class="anchor" id="ad81c4fa96a8dd394717a388e2526cc43"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char* getNameOfInterface </td>
+          <td class="memname">char const* getNameOfInterface </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>nType</em></td><td>)</td>
@@ -92,11 +102,11 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>The function is copied from the <a class="el" href="common_8cpp.html">common.cpp</a> file used by both the transmi- and receivetest</p>
 
-<p>Definition at line <a class="el" href="common_8cpp_source.html#l00059">59</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
+<p>Definition at line <a class="el" href="common_8cpp_source.html#l00049">49</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ad9ddf38b3664f62c72f786d4af0ed067"></a>
+<a class="anchor" id="a73ea2a6ef720dda9578310ef2e8dd51b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -104,14 +114,24 @@ Functions</h2></td></tr>
           <td class="memname">void print_diag </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>prgName</em></td><td>)</td>
+          <td class="paramname"><em>prgName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">HANDLE&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>The function is copied from the <a class="el" href="common_8cpp.html">common.cpp</a> file used by both the transmi- and receivetest</p>
 
-<p>Definition at line <a class="el" href="common_8cpp_source.html#l00082">82</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
+<p>Definition at line <a class="el" href="common_8cpp_source.html#l00072">72</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
 
 </div>
 </div>
@@ -130,7 +150,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>The function is based on the <a class="el" href="common_8cpp.html#a3b527c56ed133ee6815bfbc625e757af">signal_handler()</a> function from the receivetest program.</p>
 
-<p>Definition at line <a class="el" href="common_8cpp_source.html#l00028">28</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
+<p>Definition at line <a class="el" href="common_8cpp_source.html#l00017">17</a> of file <a class="el" href="common_8cpp_source.html">common.cpp</a>.</p>
 
 </div>
 </div>
@@ -140,7 +160,7 @@ Functions</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/pcan_topics">pcan_topics</a><br />
 Author(s): </br />
-<small>autogenerated on Tue Dec 9 2014 21:28:00</small>
+<small>autogenerated on Sun Dec 14 2014 19:01:10</small>
 </div>
 </body>
 </html>

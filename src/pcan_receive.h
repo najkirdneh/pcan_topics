@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>   // strtoul
 #include <fcntl.h>    // O_RDWR
-#include <libpcan.h>
 #include "common.h"
 #include <ctype.h>
 #include "ros/ros.h"
