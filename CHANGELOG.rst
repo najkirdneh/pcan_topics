@@ -2,8 +2,8 @@
 Changelog for package pcan_topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2015-01-01)
+------------------
 * Removed globals and depreciated methods
 * Added support for different device nodes
 * removed old build folder
