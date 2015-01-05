@@ -2,6 +2,11 @@
 Changelog for package pcan_topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Deleted *~ to perform bloom release
+* Contributors: najkirdneh
+
 1.0.2 (2015-01-01)
 ------------------
 * Removed globals and depreciated methods
