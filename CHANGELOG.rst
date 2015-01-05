@@ -2,8 +2,8 @@
 Changelog for package pcan_topics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-01-05)
+------------------
 * Deleted *~ to perform bloom release
 * Contributors: najkirdneh
 
