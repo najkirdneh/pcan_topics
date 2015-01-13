@@ -7,8 +7,8 @@ Changelog for package pcan_topics
 * Deleted *~ to perform bloom release
 * Contributors: najkirdneh
 
-Forthcoming
------------
+1.0.8 (2015-01-13)
+------------------
 * removed link to roscpp
 * Contributors: Hendrik Meijdam
 
