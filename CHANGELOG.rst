@@ -7,8 +7,8 @@ Changelog for package pcan_topics
 * Deleted *~ to perform bloom release
 * Contributors: najkirdneh
 
-Forthcoming
------------
+1.0.11 (2015-01-13)
+-------------------
 
 1.0.10 (2015-01-13)
 -------------------
